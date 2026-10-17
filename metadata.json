@@ -1,0 +1,6 @@
+{
+  "name": "AURO Mongolia — Contemporary Lifestyle & Essentials",
+  "description": "Official concept website for AURO Mongolia (@auro.mongolia). Curated contemporary knitwear, tailored outerwear, leathercraft, and refined lifestyle objects.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
