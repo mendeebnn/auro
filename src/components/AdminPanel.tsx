@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import { Product, OrderDetails, CategoryKey, Language } from '../types';
 import { PRODUCTS as DEFAULT_PRODUCTS } from '../data/products';
+import { AuroLogo } from './AuroLogo';
 
 interface AdminPanelProps {
   products: Product[];
@@ -103,6 +104,49 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   });
   const [newPasscode, setNewPasscode] = useState('');
   const [copiedOrderId, setCopiedOrderId] = useState<string | null>(null);
+
+  // Logo management state
+  const [logoInputUrl, setLogoInputUrl] = useState('');
+  const [currentLogo, setCurrentLogo] = useState<string | null>(() => {
+    try {
+      return localStorage.getItem('auro_custom_logo') || null;
+    } catch {
+      return null;
+    }
+  });
+
+  const handleSaveLogoUrl = (url: string) => {
+    if (url.trim()) {
+      localStorage.setItem('auro_custom_logo', url.trim());
+      setCurrentLogo(url.trim());
+      window.dispatchEvent(new Event('auro_logo_updated'));
+      showToast('Брэндийн лого амжилттай солигдлоо!');
+    }
+  };
+
+  const handleLogoFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const result = event.target?.result as string;
+      if (result) {
+        localStorage.setItem('auro_custom_logo', result);
+        setCurrentLogo(result);
+        window.dispatchEvent(new Event('auro_logo_updated'));
+        showToast('Брэндийн лого амжилттай хадгалагдлаа!');
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleResetLogo = () => {
+    localStorage.removeItem('auro_custom_logo');
+    setCurrentLogo(null);
+    setLogoInputUrl('');
+    window.dispatchEvent(new Event('auro_logo_updated'));
+    showToast('Анхны том AURO векторт лого сэргээгдлээ!');
+  };
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -540,11 +584,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
-            <div className="flex items-baseline gap-2">
-              <span className="font-serif-luxury text-xl sm:text-2xl font-bold tracking-widest">
-                AURO
-              </span>
-              <span className="text-[10px] tracking-[0.2em] uppercase font-mono text-[#a39887] border-l border-[#3d3730] pl-2">
+            <div className="flex items-center gap-3">
+              <AuroLogo size="sm" inverted={true} />
+              <span className="text-[10px] tracking-[0.2em] uppercase font-mono text-[#a39887] border-l border-[#3d3730] pl-3">
                 ADMIN PORTAL
               </span>
             </div>
@@ -1267,6 +1309,125 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   Нууц код хадгалах
                 </button>
               </form>
+            </div>
+
+            {/* Brand Logo Settings & Customization */}
+            <div className="bg-white border border-[#ded8cb] rounded-xs p-6 shadow-xs space-y-5">
+              <div className="pb-3 border-b border-[#eae5dc] flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-[#191817]" />
+                  <h2 className="text-sm uppercase tracking-wider font-bold text-[#191817]">
+                    Брэндийн Лого тохируулах (Brand Logo)
+                  </h2>
+                </div>
+                <span className="text-[10px] font-mono uppercase px-2 py-0.5 bg-[#f0eae1] text-[#6b6254] rounded-2xs font-semibold">
+                  {currentLogo ? 'Таны оруулсан зураг идэвхтэй' : 'Үндсэн Эмблем (Үггүй)'}
+                </span>
+              </div>
+
+              <p className="text-xs text-[#70685b] leading-relaxed">
+                Сайтын толгой хэсэг (Header) болон бүх хэсэгт харагдах брэндийн лого зургийг тохируулах. Та өөрийн screenshot эсвэл лого зургаа оруулан харьцаа, тайралт (crop)-ыг тохируулах боломжтой.
+              </p>
+
+              {/* Live Preview Box */}
+              <div className="p-6 bg-[#fcfbfa] border border-[#e5dfd3] rounded-xs flex flex-col items-center justify-center text-center gap-3">
+                <span className="text-[10px] uppercase font-mono tracking-widest text-[#8c8273] font-semibold">
+                  Сайт дээр харагдаж буй байдал:
+                </span>
+                <div className="py-3 px-6 bg-white border border-[#eae5dc] rounded-xs shadow-2xs flex items-center justify-center min-h-[70px]">
+                  <AuroLogo size="lg" />
+                </div>
+              </div>
+
+              {/* Upload & Crop Controls */}
+              <div className="space-y-4 pt-1">
+                <div className="p-4 bg-[#f8f6f0] border border-dashed border-[#d5cdbe] rounded-xs text-center space-y-3">
+                  <p className="text-xs font-semibold text-[#3d372e] uppercase tracking-wider">
+                    Өөрийн лого зураг / Screenshot сонгож байршуулах
+                  </p>
+                  <label className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#191817] hover:bg-[#333] text-white text-xs uppercase tracking-wider font-semibold rounded-xs transition-colors cursor-pointer shadow-xs">
+                    <Upload className="w-4 h-4" />
+                    <span>Файл сонгох (Screenshot / PNG / JPG)</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleLogoFileUpload}
+                      className="hidden"
+                    />
+                  </label>
+                  <p className="text-[11px] text-[#857b6d]">
+                    Зургийг яг оригоор нь авч, автоматаар зөв харьцаагаар тохируулж харуулна.
+                  </p>
+                </div>
+
+                {/* Crop & Fit Mode Options */}
+                {currentLogo && (
+                  <div className="p-3 bg-white border border-[#ded8cb] rounded-xs space-y-2">
+                    <label className="block text-xs uppercase tracking-wider font-semibold text-[#4f483c]">
+                      Зургийн хэлбэр, тайралт (Fit & Crop):
+                    </label>
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          localStorage.setItem('auro_logo_fit', 'contain');
+                          window.dispatchEvent(new Event('auro_logo_updated'));
+                          showToast('Бүтэн багтаах (Contain) горим сонгогдлоо');
+                        }}
+                        className="flex-1 py-1.5 px-3 text-xs font-semibold rounded-2xs border border-[#ded8cb] bg-[#faf8f5] hover:bg-[#eae3d5] text-[#191817] transition-colors"
+                      >
+                        Багтаах (Fit / Contain)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          localStorage.setItem('auro_logo_fit', 'cover');
+                          window.dispatchEvent(new Event('auro_logo_updated'));
+                          showToast('Тайрах (Cover / Crop) горим сонгогдлоо');
+                        }}
+                        className="flex-1 py-1.5 px-3 text-xs font-semibold rounded-2xs border border-[#ded8cb] bg-[#faf8f5] hover:bg-[#eae3d5] text-[#191817] transition-colors"
+                      >
+                        Тайрах (Crop / Cover)
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                <div className="pt-2 border-t border-[#f0eae1]">
+                  <label className="block text-xs uppercase tracking-wider font-semibold text-[#4f483c] mb-1.5">
+                    Эсвэл лого зургийн холбоос (URL) оруулах:
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      type="url"
+                      value={logoInputUrl}
+                      onChange={(e) => setLogoInputUrl(e.target.value)}
+                      placeholder="https://.../logo.png"
+                      className="flex-1 px-3 py-2 text-xs bg-[#fbf9f5] border border-[#ded8cb] focus:outline-hidden focus:border-[#191817] rounded-xs"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleSaveLogoUrl(logoInputUrl)}
+                      className="px-4 py-2 bg-[#292622] hover:bg-[#3d3832] text-white text-xs uppercase tracking-wider font-semibold rounded-xs transition-colors cursor-pointer"
+                    >
+                      Хадгалах
+                    </button>
+                  </div>
+                </div>
+
+                {currentLogo && (
+                  <div className="pt-2">
+                    <button
+                      type="button"
+                      onClick={handleResetLogo}
+                      className="inline-flex items-center gap-1.5 text-xs text-rose-700 hover:text-rose-900 font-semibold cursor-pointer underline"
+                    >
+                      <RotateCcw className="w-3.5 h-3.5" />
+                      <span>Үндсэн график эмблем рүү буцаах</span>
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Backup & Restore */}

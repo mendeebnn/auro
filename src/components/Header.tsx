@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ShoppingBag, Menu, X, ArrowUpRight, Globe, Search, ShieldCheck } from 'lucide-react';
 import { Language, PageView, CategoryKey } from '../types';
+import { AuroLogo } from './AuroLogo';
 
 interface HeaderProps {
   currentView: PageView;
@@ -112,19 +113,15 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Main E-Commerce Navigation Bar */}
       <header className="sticky top-0 z-40 bg-[#fcfbfa]/95 backdrop-blur-md border-b border-[#eae6de] transition-all">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between gap-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 sm:h-22 flex items-center justify-between gap-6">
           
-          {/* Zone 1: Single Brand Wordmark */}
+          {/* Zone 1: Big AURO Brand Logo */}
           <button
             onClick={handleHomeClick}
-            className="group text-left text-[#191817] hover:opacity-85 transition-opacity whitespace-nowrap shrink-0 flex items-baseline gap-2 cursor-pointer"
+            className="group text-left text-[#191817] hover:opacity-90 transition-opacity whitespace-nowrap shrink-0 flex items-center cursor-pointer py-1"
+            title="AURO | FASHION STORE"
           >
-            <span className="font-serif-luxury text-2xl sm:text-3xl tracking-[0.2em] uppercase font-medium">
-              A U R O
-            </span>
-            <span className="text-[10px] tracking-[0.18em] uppercase text-[#736c62] hidden xs:inline font-sans-clean font-semibold">
-              FASHION STORE 🖤
-            </span>
+            <AuroLogo size="lg" />
           </button>
 
           {/* Zone 2: MEN / WOMEN / ALL LINKS */}
@@ -209,6 +206,12 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Mobile Dropdown */}
         {mobileMenuOpen && (
           <div className="md:hidden border-t border-[#eae6de] bg-[#fcfbfa] px-6 py-6 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-[#eae6de]">
+              <AuroLogo size="md" />
+              <span className="text-[10px] font-mono tracking-widest uppercase text-[#8c8273] font-semibold">
+                AURO MONGOLIA
+              </span>
+            </div>
             <div className="flex flex-col space-y-3">
               {shopNavItems.map((item, idx) => (
                 <button

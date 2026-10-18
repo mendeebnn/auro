@@ -1,6 +1,7 @@
 import React from 'react';
 import { Instagram, ArrowUpRight, ArrowUp } from 'lucide-react';
 import { Language, PageView } from '../types';
+import { AuroLogo } from './AuroLogo';
 
 interface FooterProps {
   lang: Language;
@@ -20,9 +21,7 @@ export const Footer: React.FC<FooterProps> = ({ lang, onNavigate }) => {
           
           {/* Brand Info */}
           <div className="md:col-span-5 space-y-3 text-left">
-            <span className="font-serif-luxury text-2xl tracking-[0.2em] uppercase text-white block">
-              AURO | FASHION STORE 🖤
-            </span>
+            <AuroLogo size="lg" inverted={true} />
             <div className="inline-block text-[11px] font-mono tracking-wider uppercase text-[#c7bdae] font-semibold bg-[#262421] px-2.5 py-1 rounded-xs">
               ✦ MEN • WOMEN
             </div>
